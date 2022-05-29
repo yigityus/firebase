@@ -1,8 +1,16 @@
     package com.example.firebase;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.JsonSerializable;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
 import org.springframework.boot.CommandLineRunner;
@@ -11,8 +19,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 import java.io.FileInputStream;
+import java.util.List;
 
-@SpringBootApplication
+    @SpringBootApplication
 public class FirebaseApplication {
 
     public static void main(String[] args) {
@@ -23,7 +32,7 @@ public class FirebaseApplication {
     CommandLineRunner runner() {
         return args -> {
             FileInputStream serviceAccount =
-                    new FileInputStream("/home/grand/dev/boot/firebase/src/main/resources/firebase-adminsdk.json");
+                    new FileInputStream("/Users/leaf/boot/firebase/src/main/resources/firebase-adminsdk.json");
 
             FirebaseOptions options = new FirebaseOptions.Builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
@@ -54,6 +63,12 @@ public class FirebaseApplication {
             System.out.println("Successfully sent message: " + response);
 */
 
+
+
+
+            // send firebase cloud message
+
+/*
             String send = FirebaseMessaging.getInstance()
                     .send(Message.builder()
                             .setToken("cVEeih3tQKOTBRfzJ5ev-V:APA91bHYbP5ZHZ-mBGTOgeSUkwle50Eh7ES90uoqo3WcIWHREhoAK-7Mta6BuVMgo882tUjAqrmOUPUp5nr9hT6QDMXKe90U6YJXk09_hUc0gC7zbhR6bEyjMyKAZugTg7q76bd8gWff")
@@ -61,6 +76,7 @@ public class FirebaseApplication {
                             .build());
 
             System.out.println(send);
+*/
 
 /*
 
@@ -80,6 +96,37 @@ public class FirebaseApplication {
             // Response is a message ID string.
             System.out.println("Successfully sent message: " + response1);
 */
+
+
+
+            // As an admin, the app has access to read and write all data, regardless of Security Rules
+            DatabaseReference ref = FirebaseDatabase.getInstance()
+                    .getReference("/nodes/0x00001");
+
+            ObjectNode jsonNodes = new ObjectNode(JsonNodeFactory.instance);
+            jsonNodes.put("test", "123");
+
+            Foo foo = Foo.builder()
+                    .id(0L)
+                    .name("Test Name")
+                    .build();
+
+            ObjectMapper mapper = new ObjectMapper();
+
+
+            CareLedger careLedger = CareLedger.builder()
+                    .cabinetId("1")
+                    .description("2")
+                    .eventId("3")
+                    .privateCards(List.of(CareCardSpec.builder()
+                            .networkId("Networdk1")
+                            .protocolVersion("vaersoipn12")
+                            .build()))
+                    .build();
+
+
+            ref.setValueAsync(careLedger);
+
         };
     }
 
